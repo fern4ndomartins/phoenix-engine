@@ -1,6 +1,6 @@
-#include "main.h"
-#include "../include/window.h"
-#include "../include/input.h"
+#include "../include/main.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "../include/stb_image.h"
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -68,7 +68,51 @@ int main()
         -0.5f,  0.5f, -0.5f
     };
     
-    
+    float smallCubeVertices[] = {
+        // positions (size = 0.5, center_x = 0.75)
+        0.50f, -0.25f, -0.25f,
+        1.00f, -0.25f, -0.25f,
+        1.00f,  0.25f, -0.25f,
+        1.00f,  0.25f, -0.25f,
+        0.50f,  0.25f, -0.25f,
+        0.50f, -0.25f, -0.25f,
+
+        0.50f, -0.25f,  0.25f,
+        1.00f, -0.25f,  0.25f,
+        1.00f,  0.25f,  0.25f,
+        1.00f,  0.25f,  0.25f,
+        0.50f,  0.25f,  0.25f,
+        0.50f, -0.25f,  0.25f,
+
+        0.50f,  0.25f,  0.25f,
+        0.50f,  0.25f, -0.25f,
+        0.50f, -0.25f, -0.25f,
+        0.50f, -0.25f, -0.25f,
+        0.50f, -0.25f,  0.25f,
+        0.50f,  0.25f,  0.25f,
+
+        1.00f,  0.25f,  0.25f,
+        1.00f,  0.25f, -0.25f,
+        1.00f, -0.25f, -0.25f,
+        1.00f, -0.25f, -0.25f,
+        1.00f, -0.25f,  0.25f,
+        1.00f,  0.25f,  0.25f,
+
+        0.50f, -0.25f, -0.25f,
+        1.00f, -0.25f, -0.25f,
+        1.00f, -0.25f,  0.25f,
+        1.00f, -0.25f,  0.25f,
+        0.50f, -0.25f,  0.25f,
+        0.50f, -0.25f, -0.25f,
+
+        0.50f,  0.25f, -0.25f,
+        1.00f,  0.25f, -0.25f,
+        1.00f,  0.25f,  0.25f,
+        1.00f,  0.25f,  0.25f,
+        0.50f,  0.25f,  0.25f,
+        0.50f,  0.25f, -0.25f
+    };
+
     
     float texCoords[] = {
         0.0f, 0.0f,   
@@ -99,9 +143,11 @@ int main()
     stbi_image_free(data);
 
 
-    unsigned int VBO, VAO;
+    unsigned int VBO, VBO1, VAO, VAO1;
     glGenVertexArrays(1, &VAO);
+    glGenVertexArrays(1, &VAO1);
     glGenBuffers(1, &VBO);
+    glGenBuffers(1, &VBO1);
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -109,34 +155,40 @@ int main()
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    
+    glBindVertexArray(VAO1);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO1);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(smallCubeVertices), smallCubeVertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
 
     // glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     // glEnableVertexAttribArray(1);
 
-    glBindVertexArray(VAO);
+    glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
+    glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+    glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
+    struct Camera *cam = new Camera;
+    cam->cameraFront = cameraFront;
+    cam->cameraPos = cameraPos;
+    cam->cameraUp = cameraUp;
 
-    float xcoord = 0.5f;
-    float ycoord = 0.5f;
 
     while (!glfwWindowShouldClose(window))
     {
-
-        processInput(window, &xcoord, &ycoord);
+        
+        processInput(window, cam);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glm::mat4 model = glm::rotate(glm::mat4(1.0f),
-                                    (float)glfwGetTime(), // rotation angle
-                                    glm::vec3(0.5f, 1.0f, 0.0f)); // axis
-
-        glm::mat4 view = glm::translate(glm::mat4(1.0f),
-                                        glm::vec3(0.0f, 0.0f, -3.0f));
-
-        glm::mat4 projection = glm::perspective(glm::radians(45.0f),
-                                                800.0f / 600.0f,
-                                                0.1f, 100.0f);
-
+        glm::mat4 model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime(),  glm::vec3(0.5f, 1.0f, 0.0f)); 
+        glm::mat4 view = glm::lookAt(cam->cameraPos, cam->cameraPos + cam->cameraFront, cam->cameraUp);
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
         glm::mat4 mvp = projection * view * model;
+
+        glBindVertexArray(VAO1);
 
         unsigned int mvpLoc = glGetUniformLocation(shader.ID, "MVP");
 
@@ -145,14 +197,17 @@ int main()
         glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
-
         shaderBlack.use();
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glLineWidth(2.0f);
 
-
         unsigned int mvpLocBlack = glGetUniformLocation(shaderBlack.ID, "MVP");
         glUniformMatrix4fv(mvpLocBlack, 1, GL_FALSE, glm::value_ptr(mvp));
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        
+        glBindVertexArray(VAO);
+        shader.use();
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glfwSwapBuffers(window);

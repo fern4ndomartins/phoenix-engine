@@ -1,4 +1,5 @@
 #pragma once 
 #include "window.h"
+#include "main.h"
 
-void processInput(GLFWwindow *window, float *xcoord, float *ycoord);
+void processInput(GLFWwindow *window, struct Camera *cam);

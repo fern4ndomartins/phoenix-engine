@@ -9,10 +9,15 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glad/glad.h> 
 #include <GLFW/glfw3.h>
+#include "../include/input.h"
+#include "../include/window.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
 
+struct Camera {
+    glm::vec3 cameraPos;
+    glm::vec3 cameraFront;
+    glm::vec3 cameraUp; 
+};
 
 class Shader
 {
