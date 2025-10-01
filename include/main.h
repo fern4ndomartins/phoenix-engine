@@ -7,11 +7,15 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <glad/glad.h> 
+#include "../include/glad/glad.h" 
 #include <GLFW/glfw3.h>
 #include "../include/input.h"
 #include "../include/window.h"
-
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+#include <sys/resource.h>
+#include <unistd.h>
 
 struct Camera {
     glm::vec3 cameraPos;

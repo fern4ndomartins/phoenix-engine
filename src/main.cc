@@ -5,13 +5,31 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+double getRAMUsage() {
+    struct rusage usage;
+    getrusage(RUSAGE_SELF, &usage);
+    return usage.ru_maxrss / 1024.0; 
+}
+
 int main()
 {
+
+
+
     GLFWwindow* window = create_window(SCR_WIDTH, SCR_HEIGHT);
     if (!window) {
         std::cout << "failed to create window.";
         return -1;
     }
+
+
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 330");
+
+    
 
     Shader shader = Shader("../assets/shaders/shader3d.vs", "../assets/shaders/shader3d.fs");
     Shader shaderBlack = Shader("../assets/shaders/shader3d.vs", "../assets/shaders/shader3d-black.fs");
@@ -209,6 +227,20 @@ int main()
         shader.use();
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        ImGui::Begin("Stats");
+        ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+        ImGui::Text("RAM: %.2f MB", getRAMUsage());
+        ImGui::End();
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();
