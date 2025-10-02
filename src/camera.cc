@@ -35,7 +35,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     cam->cameraFront = glm::normalize(cam->cameraFront);
 }
 
-Camera * createCamera() {
+Camera * createCamera(GLFWwindow *window) {
     glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
     glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
@@ -43,7 +43,8 @@ Camera * createCamera() {
     cam->cameraFront = cameraFront;
     cam->cameraPos = cameraPos;
     cam->cameraUp = cameraUp;
-
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     ::cam = cam;
     return cam;
 }

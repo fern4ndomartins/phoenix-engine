@@ -2,110 +2,9 @@
 #include <GLFW/glfw3.h>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/fwd.hpp>
-#define STB_IMAGE_IMPLEMENTATION
-#include "../include/stb_image.h"
-
-
-float cubeVertices[] = {
-        // positions          
-        -0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f,  0.5f, -0.5f,
-        0.5f,  0.5f, -0.5f,
-        -0.5f,  0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-
-        -0.5f, -0.5f,  0.5f,
-        0.5f, -0.5f,  0.5f,
-        0.5f,  0.5f,  0.5f,
-        0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,
-
-        -0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-
-        0.5f,  0.5f,  0.5f,
-        0.5f,  0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f,  0.5f,
-        0.5f,  0.5f,  0.5f,
-
-        -0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f,  0.5f,
-        0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f, -0.5f,
-
-        -0.5f,  0.5f, -0.5f,
-        0.5f,  0.5f, -0.5f,
-        0.5f,  0.5f,  0.5f,
-        0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f, -0.5f
-    };
-    
-    float smallCubeVertices[] = {
-        // positions (size = 0.5, center_x = 0.75)
-        0.50f, -0.25f, -0.25f,
-        1.00f, -0.25f, -0.25f,
-        1.00f,  0.25f, -0.25f,
-        1.00f,  0.25f, -0.25f,
-        0.50f,  0.25f, -0.25f,
-        0.50f, -0.25f, -0.25f,
-
-        0.50f, -0.25f,  0.25f,
-        1.00f, -0.25f,  0.25f,
-        1.00f,  0.25f,  0.25f,
-        1.00f,  0.25f,  0.25f,
-        0.50f,  0.25f,  0.25f,
-        0.50f, -0.25f,  0.25f,
-
-        0.50f,  0.25f,  0.25f,
-        0.50f,  0.25f, -0.25f,
-        0.50f, -0.25f, -0.25f,
-        0.50f, -0.25f, -0.25f,
-        0.50f, -0.25f,  0.25f,
-        0.50f,  0.25f,  0.25f,
-
-        1.00f,  0.25f,  0.25f,
-        1.00f,  0.25f, -0.25f,
-        1.00f, -0.25f, -0.25f,
-        1.00f, -0.25f, -0.25f,
-        1.00f, -0.25f,  0.25f,
-        1.00f,  0.25f,  0.25f,
-
-        0.50f, -0.25f, -0.25f,
-        1.00f, -0.25f, -0.25f,
-        1.00f, -0.25f,  0.25f,
-        1.00f, -0.25f,  0.25f,
-        0.50f, -0.25f,  0.25f,
-        0.50f, -0.25f, -0.25f,
-
-        0.50f,  0.25f, -0.25f,
-        1.00f,  0.25f, -0.25f,
-        1.00f,  0.25f,  0.25f,
-        1.00f,  0.25f,  0.25f,
-        0.50f,  0.25f,  0.25f,
-        0.50f,  0.25f, -0.25f
-    };
-
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
-
-
-
 
 int main()
 {
-
-
     GLFWwindow* window = create_window(SCR_WIDTH, SCR_HEIGHT);
     if (!window) {
         std::cout << "failed to create window.";
@@ -114,81 +13,32 @@ int main()
     initStats(window);   
 
     Shader shader = Shader("../assets/shaders/shader3d.vs", "../assets/shaders/shader3d.fs");
-    Shader shaderBlack = Shader("../assets/shaders/shader3d.vs", "../assets/shaders/shader3d-black.fs");
-
-    float vertices[] = {         //texture stuff ;;;;;;
-         0.0f, 0.5f, 0.0f,    0.0f, 0.0f,
-         0.5f, 0.0f, 0.0f,    1.0f, 0.0f,
-        -0.5f, 0.0f, 0.0f,    0.5f, 1.0f
-
-    };
-
     
-
-    
-    float texCoords[] = {
-        0.0f, 0.0f,   
-        1.0f, 0.0f,  
-        0.5f, 1.0f   
-    };
-
-    float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
-    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor); 
-    unsigned int texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    int width, height, nrChannels;
-    unsigned char *data = stbi_load("../src/wall.jpg", &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-
-
-    unsigned int VBO, VBO1, VAO, VAO1;
+    unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
-    glGenVertexArrays(1, &VAO1);
     glGenBuffers(1, &VBO);
-    glGenBuffers(1, &VBO1);
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    
-    glBindVertexArray(VAO1);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO1);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(smallCubeVertices), smallCubeVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, cubeVerticesSize, cubeVertices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    // glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    // glEnableVertexAttribArray(1);
-
-    Camera *cam = createCamera();
-
-
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
+    Camera *cam = createCamera(window);
 
     std::vector<Entity*> objects;
-    Entity *obj1 = new Entity(glm::vec3(1.0f, 1.0f, 5.0f), "red");  
+    Entity *obj1 = new Entity(glm::vec3(1.0f, 0.5f, 5.0f), "white");  
+    Entity *obj2 = new Entity(glm::vec3(5.0f, 0.0f, 5.0f), "yellow");  
+    Entity *obj3 = new Entity(glm::vec3(7.0f, 0.0f, 5.0f), "green");  
     objects.push_back(obj1);
+    objects.push_back(obj2);
+    objects.push_back(obj3);
+    
+    shader.use();
+
+    unsigned int mvpLoc = glGetUniformLocation(shader.ID, "MVP");
+    unsigned int colorLoc = glGetUniformLocation(shader.ID, "color");
 
     while (!glfwWindowShouldClose(window))
     {
@@ -201,46 +51,10 @@ int main()
         model = glm::translate(model, glm::vec3(10.0f, 1.0f, 1.0f));
         glm::mat4 view = glm::lookAt(cam->cameraPos, cam->cameraPos + cam->cameraFront, cam->cameraUp);
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-        glm::mat4 mvp = projection * view * model;
-
-        glBindVertexArray(VAO1);
-
-        unsigned int mvpLoc = glGetUniformLocation(shader.ID, "MVP");
-        unsigned int colorLoc = glGetUniformLocation(shaderBlack.ID, "color");
-
-
-        shaderBlack.use();
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        shaderBlack.use();
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        glLineWidth(2.0f);
-
-        unsigned int mvpLocBlack = glGetUniformLocation(shaderBlack.ID, "MVP");
-        glUniformMatrix4fv(mvpLocBlack, 1, GL_FALSE, glm::value_ptr(mvp));
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        
-        glBindVertexArray(VAO);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-        model = glm::rotate(glm::mat4(1.0f), 0.0f,  glm::vec3(0.5f, 1.0f, 0.0f));
-        model = glm::translate(model, glm::vec3(8.0f, 1.0f, 1.0f));
-        view = glm::lookAt(cam->cameraPos, cam->cameraPos + cam->cameraFront, cam->cameraUp);
-        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-        mvp = projection * view * model;
-        glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
-
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        
-        shaderBlack.use();
+        glm::mat4 mvp = projection * view * model;        
 
         for (auto& obj : objects) {
             model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime(),  obj->position);
-
             model = glm::translate(model, obj->position);
             mvp = projection * view * model;
             glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
