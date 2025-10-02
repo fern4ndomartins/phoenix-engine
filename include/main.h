@@ -12,12 +12,10 @@
 #include "input.h"
 #include "window.h"
 #include "stats.h"
+#include <vector>
+#include "entity.h"
+#include "camera.h"
 
-struct Camera {
-    glm::vec3 cameraPos;
-    glm::vec3 cameraFront;
-    glm::vec3 cameraUp; 
-};
 
 class Shader
 {

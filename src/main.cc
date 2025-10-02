@@ -1,44 +1,12 @@
 #include "../include/main.h"
+#include <GLFW/glfw3.h>
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/fwd.hpp>
 #define STB_IMAGE_IMPLEMENTATION
 #include "../include/stb_image.h"
 
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
 
-class Entity {
-private:
-    glm::vec3 position;
-    glm::vec3 rotation;  
-    glm::vec3 scale;
-    
-public:
-    Entity() 
-        : position(0.0f, 0.0f, 0.0f), rotation(0.0f, 0.0f, 0.0f), scale(1.0f, 1.0f, 1.0f) 
-    {}
-        
-};
-
-int main()
-{
-    GLFWwindow* window = create_window(SCR_WIDTH, SCR_HEIGHT);
-    if (!window) {
-        std::cout << "failed to create window.";
-        return -1;
-    }
-    initStats(window);   
-
-    Shader shader = Shader("../assets/shaders/shader3d.vs", "../assets/shaders/shader3d.fs");
-    Shader shaderBlack = Shader("../assets/shaders/shader3d.vs", "../assets/shaders/shader3d-black.fs");
-
-    float vertices[] = {         //texture stuff ;;;;;;
-         0.0f, 0.5f, 0.0f,    0.0f, 0.0f,
-         0.5f, 0.0f, 0.0f,    1.0f, 0.0f,
-        -0.5f, 0.0f, 0.0f,    0.5f, 1.0f
-
-    };
-
-    float cubeVertices[] = {
+float cubeVertices[] = {
         // positions          
         -0.5f, -0.5f, -0.5f,
         0.5f, -0.5f, -0.5f,
@@ -128,6 +96,35 @@ int main()
         0.50f,  0.25f, -0.25f
     };
 
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
+
+
+
+
+int main()
+{
+
+
+    GLFWwindow* window = create_window(SCR_WIDTH, SCR_HEIGHT);
+    if (!window) {
+        std::cout << "failed to create window.";
+        return -1;
+    }
+    initStats(window);   
+
+    Shader shader = Shader("../assets/shaders/shader3d.vs", "../assets/shaders/shader3d.fs");
+    Shader shaderBlack = Shader("../assets/shaders/shader3d.vs", "../assets/shaders/shader3d-black.fs");
+
+    float vertices[] = {         //texture stuff ;;;;;;
+         0.0f, 0.5f, 0.0f,    0.0f, 0.0f,
+         0.5f, 0.0f, 0.0f,    1.0f, 0.0f,
+        -0.5f, 0.0f, 0.0f,    0.5f, 1.0f
+
+    };
+
+    
+
     
     float texCoords[] = {
         0.0f, 0.0f,   
@@ -182,14 +179,16 @@ int main()
     // glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     // glEnableVertexAttribArray(1);
 
-    glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
-    glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-    glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
-    struct Camera *cam = new Camera;
-    cam->cameraFront = cameraFront;
-    cam->cameraPos = cameraPos;
-    cam->cameraUp = cameraUp;
+    Camera *cam = createCamera();
 
+
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+
+    std::vector<Entity*> objects;
+    Entity *obj1 = new Entity(glm::vec3(1.0f, 1.0f, 5.0f), "red");  
+    objects.push_back(obj1);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -207,8 +206,10 @@ int main()
         glBindVertexArray(VAO1);
 
         unsigned int mvpLoc = glGetUniformLocation(shader.ID, "MVP");
+        unsigned int colorLoc = glGetUniformLocation(shaderBlack.ID, "color");
 
-        shader.use();
+
+        shaderBlack.use();
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
         glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -222,7 +223,6 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, 36);
         
         glBindVertexArray(VAO);
-        shader.use();
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -235,7 +235,19 @@ int main()
         glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
 
         glDrawArrays(GL_TRIANGLES, 0, 36);
+        
+        shaderBlack.use();
 
+        for (auto& obj : objects) {
+            model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime(),  obj->position);
+
+            model = glm::translate(model, obj->position);
+            mvp = projection * view * model;
+            glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
+            glUniform3f(colorLoc, obj->colorRGB.x, obj->colorRGB.y, obj->colorRGB.z);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            
+        }
 
         renderStats();
 

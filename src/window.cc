@@ -7,10 +7,12 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 GLFWwindow* create_window(unsigned int scr_width, unsigned int scr_height) {
-    glfwInit();
+
+    glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwInit();
 
     GLFWwindow* window = glfwCreateWindow(scr_width, scr_height, "window", NULL, NULL);
     if (window == NULL)
