@@ -1,35 +1,32 @@
 #include "../include/main.h"
+#include <glm/ext/matrix_transform.hpp>
 #define STB_IMAGE_IMPLEMENTATION
 #include "../include/stb_image.h"
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-double getRAMUsage() {
-    struct rusage usage;
-    getrusage(RUSAGE_SELF, &usage);
-    return usage.ru_maxrss / 1024.0; 
-}
+class Entity {
+private:
+    glm::vec3 position;
+    glm::vec3 rotation;  
+    glm::vec3 scale;
+    
+public:
+    Entity() 
+        : position(0.0f, 0.0f, 0.0f), rotation(0.0f, 0.0f, 0.0f), scale(1.0f, 1.0f, 1.0f) 
+    {}
+        
+};
 
 int main()
 {
-
-
-
     GLFWwindow* window = create_window(SCR_WIDTH, SCR_HEIGHT);
     if (!window) {
         std::cout << "failed to create window.";
         return -1;
     }
-
-
-
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 330");
-
-    
+    initStats(window);   
 
     Shader shader = Shader("../assets/shaders/shader3d.vs", "../assets/shaders/shader3d.fs");
     Shader shaderBlack = Shader("../assets/shaders/shader3d.vs", "../assets/shaders/shader3d-black.fs");
@@ -198,10 +195,11 @@ int main()
     {
         
         processInput(window, cam);
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glm::mat4 model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime(),  glm::vec3(0.5f, 1.0f, 0.0f)); 
+        glm::mat4 model = glm::rotate(glm::mat4(1.0f), 0.0f,  glm::vec3(0.5f, 1.0f, 0.0f));
+        model = glm::translate(model, glm::vec3(10.0f, 1.0f, 1.0f));
         glm::mat4 view = glm::lookAt(cam->cameraPos, cam->cameraPos + cam->cameraFront, cam->cameraUp);
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
         glm::mat4 mvp = projection * view * model;
@@ -229,18 +227,17 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
+        model = glm::rotate(glm::mat4(1.0f), 0.0f,  glm::vec3(0.5f, 1.0f, 0.0f));
+        model = glm::translate(model, glm::vec3(8.0f, 1.0f, 1.0f));
+        view = glm::lookAt(cam->cameraPos, cam->cameraPos + cam->cameraFront, cam->cameraUp);
+        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+        mvp = projection * view * model;
+        glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
 
-        ImGui::Begin("Stats");
-        ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
-        ImGui::Text("RAM: %.2f MB", getRAMUsage());
-        ImGui::End();
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
+        renderStats();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
