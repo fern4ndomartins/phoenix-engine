@@ -22,6 +22,7 @@ GLFWwindow* create_window(unsigned int scr_width, unsigned int scr_height) {
         return NULL;
     }
     glfwMakeContextCurrent(window);
+    
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -29,6 +30,7 @@ GLFWwindow* create_window(unsigned int scr_width, unsigned int scr_height) {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return 0;
     }
+    glEnable(GL_DEPTH_TEST);
 
     return window;
 } 

@@ -2,7 +2,7 @@
 
 void processInput(GLFWwindow *window, struct Camera *cam)
 {
-    float cameraSpeed = 0.05f; // adjust per frame time!
+    float cameraSpeed = 0.05f; 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         cam->cameraPos += cameraSpeed * cam->cameraFront;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -17,6 +17,7 @@ void processInput(GLFWwindow *window, struct Camera *cam)
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         cam->cameraPos -= cameraSpeed * glm::vec3(0.0f, 1.0f, 0.0f);  
 
+    
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);

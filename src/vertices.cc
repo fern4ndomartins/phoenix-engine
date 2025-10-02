@@ -1,5 +1,50 @@
 #include "../include/vertices.h"
 
+float cubeVerticesWtTexture[] = {
+    // positions          // texture coords
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+
+     0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+    -0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 0.0f
+};
+
 float vertices[] = {         //texture stuff ;;;;;;
          0.0f, 0.5f, 0.0f,    0.0f, 0.0f,
          0.5f, 0.0f, 0.0f,    1.0f, 0.0f,
@@ -103,3 +148,4 @@ const int cubeVerticesSize = sizeof(cubeVertices);
 const int smallCubeVerticesSize = sizeof(smallCubeVertices);
 const int verticesSize = sizeof(vertices);
 const int texCoordsSize = sizeof(texCoords);
+const int cubeVerticesWtTextureSize = sizeof(cubeVerticesWtTexture);

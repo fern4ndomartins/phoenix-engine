@@ -2,6 +2,7 @@
 #ifndef VERTICES_H
 #define VERTICES_H
 
+extern float cubeVerticesWtTexture[];
 extern float cubeVertices[];
 extern float smallCubeVertices[];
 extern float vertices[];
@@ -11,5 +12,6 @@ extern const int cubeVerticesSize;
 extern const int smallCubeVerticesSize;
 extern const int verticesSize;
 extern const int texCoordsSize;
+extern const int cubeVerticesWtTextureSize;
 
 #endif
