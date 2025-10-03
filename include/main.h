@@ -1,4 +1,5 @@
 #pragma once
+#include <glm/fwd.hpp>
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -21,6 +22,12 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+struct Vertex {
+    glm::vec3 position;
+    glm::vec3 normal;
+    glm::vec2 texcoord;
+};
+bool loadOBJ(const std::string& filename, std::vector<Vertex>& outVertices);
 
 class Shader
 {
@@ -85,7 +92,12 @@ public:
     { 
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value); 
     }
-    
+    void setVec3(const std::string &name, glm::vec3 value) {
+        glUniform3f(glGetUniformLocation(ID, name.c_str()), value.x, value.y, value.z); 
+    }
+    void setMat4(const std::string &name, glm::mat4 &mat) {
+        glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat)); 
+    }
 private:
     void checkCompileErrors(unsigned int shader, std::string type)
     {

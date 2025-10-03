@@ -27,11 +27,14 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, cubeVerticesWtTextureSize, cubeVerticesWtTexture, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     unsigned int texture;
     glGenTextures(1, &texture);
@@ -69,23 +72,59 @@ int main()
     objects.push_back(obj2);
     objects.push_back(obj3);
 
+    glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+    Entity *light = new Entity(glm::vec3(1.2f, 1.0f, 2.0f), "white", 0.2f, player);
+    objects.push_back(light);
     shader.use();
+    shader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    shader.setVec3("lightPos", lightPos);  
+    
     unsigned int textureLoc = glGetUniformLocation(shader.ID, "texture1");
     glUniform1i(textureLoc, 0);
     
     unsigned int mvpLoc = glGetUniformLocation(shader.ID, "MVP");
     unsigned int colorLoc = glGetUniformLocation(shader.ID, "color");
 
+
+
+    std::vector<Vertex> spaceshipVertices;
+    loadOBJ("../assets/models/spaceship.obj", spaceshipVertices);
+
+    unsigned int VBOmodel, VAOmodel;
+    glGenVertexArrays(1, &VAOmodel);
+    glGenBuffers(1, &VBOmodel);
+    glBindVertexArray(VAOmodel);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOmodel);
+    glBufferData(GL_ARRAY_BUFFER, spaceshipVertices.size()*sizeof(Vertex), spaceshipVertices.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texcoord));
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+    glEnableVertexAttribArray(2);
+
+    glBindVertexArray(0);
+
+
+
+
     while (!glfwWindowShouldClose(window))
     {
         processInput(window, cam);
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
 
         shader.use();
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
+
+
+        
+
 
         player->position = cam->cameraPos;
 
@@ -102,10 +141,27 @@ int main()
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
         glm::mat4 mvp = projection * view * model;        
 
+
+
+        model = glm::translate(model, glm::vec3(-4.2f, 1.0f, 2.0f));
+        shader.setMat4("model", model);
+        shader.setMat4("view", view);
+        shader.setMat4("projection", projection);
+
+        glBindVertexArray(VAOmodel);
+        glDrawArrays(GL_TRIANGLES, 0, spaceshipVertices.size());
+
+        glBindVertexArray(VAO);
+
         for (auto& obj : objects) {
             model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime(),  obj->position);
             model = glm::translate(model, obj->position);
             model = glm::scale(model, obj->scale);
+            shader.setMat4("model", model);
+            shader.setMat4("view", view);
+            shader.setMat4("projection", projection);
+            shader.setVec3("lightPos", lightPos);
+            shader.setVec3("lightColor", glm::vec3(1.0f));
             mvp = projection * view * model;
             glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
             glUniform3f(colorLoc, obj->colorRGB.x, obj->colorRGB.y, obj->colorRGB.z);
