@@ -1,4 +1,5 @@
 #include "../include/main.h"
+
 #include <GLFW/glfw3.h>
 #include <cstddef>
 #include <glm/ext/matrix_transform.hpp>
@@ -62,7 +63,7 @@ int main()
 
     Camera *cam = createCamera(window);
 
-    Entity *player = new Entity(glm::vec3(0.0f, 0.0f, 0.0f), "red", 0.0f, NULL); 
+    Entity *player = new Entity(glm::vec3(0.0f, 2.0f, 10.0f), "yellow", 0.0f, NULL); 
 
     std::vector<Entity*> objects;
     Entity *obj1 = new Entity(glm::vec3(1.0f, 0.5f, 5.0f), "white", 1.0f, player);  
@@ -71,6 +72,7 @@ int main()
     objects.push_back(obj1);
     objects.push_back(obj2);
     objects.push_back(obj3);
+    objects.push_back(player);
 
     glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
     Entity *light = new Entity(glm::vec3(1.2f, 1.0f, 2.0f), "white", 0.2f, player);
@@ -88,7 +90,7 @@ int main()
 
 
     std::vector<Vertex> spaceshipVertices;
-    loadOBJ("../assets/models/spaceship.obj", spaceshipVertices);
+    loadOBJ("../assets/models/floor.obj", spaceshipVertices);
 
     unsigned int VBOmodel, VAOmodel;
     glGenVertexArrays(1, &VAOmodel);
@@ -110,10 +112,22 @@ int main()
 
 
 
+    glm::vec3 min(FLT_MAX), max(-FLT_MAX);
+    for (auto& v : spaceshipVertices) {
+        min.x = std::min(min.x, v.position.x);
+        min.y = std::min(min.y, v.position.y);
+        min.z = std::min(min.z, v.position.z);
+
+        max.x = std::max(max.x, v.position.x);
+        max.y = std::max(max.y, v.position.y);
+        max.z = std::max(max.z, v.position.z);
+    }
+    struct Collider col = { min, max };
 
     while (!glfwWindowShouldClose(window))
     {
-        processInput(window, cam);
+        if (checkCollision(cam->cameraPos, 0.5f,  col)) cam->cameraPos.y -= 0.02;
+        processInput(window, cam, col);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
@@ -121,10 +135,6 @@ int main()
         shader.use();
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
-
-
-        
-
 
         player->position = cam->cameraPos;
 
@@ -136,12 +146,10 @@ int main()
 
 
         glm::mat4 model = glm::rotate(glm::mat4(1.0f), 0.0f,  glm::vec3(0.5f, 1.0f, 0.0f));
-        model = glm::translate(model, glm::vec3(10.0f, 1.0f, 1.0f));
+        model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
         glm::mat4 view = glm::lookAt(cam->cameraPos, cam->cameraPos + cam->cameraFront, cam->cameraUp);
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
         glm::mat4 mvp = projection * view * model;        
-
-
 
         model = glm::translate(model, glm::vec3(-4.2f, 1.0f, 2.0f));
         shader.setMat4("model", model);
@@ -175,6 +183,7 @@ int main()
         for (int j = i + 1; j < objects.size(); j++) {
             if (objects[i]->checkCollision(objects[j])) {
                 std::cout << "Collision between object " << i << " and " << j << std::endl;
+
             }
         }
         }

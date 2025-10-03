@@ -48,3 +48,9 @@ Camera * createCamera(GLFWwindow *window) {
     ::cam = cam;
     return cam;
 }
+
+bool checkCollision(glm::vec3 camPos, float radius, struct Collider box){
+    glm::vec3 closestPoint = glm::clamp(camPos, box.min, box.max);
+    float dist = glm::length(camPos - closestPoint);
+    return dist < radius;
+}
